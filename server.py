@@ -240,6 +240,7 @@ def fasta_accuracy():
     seq1 = ''
     seq2 = ''
     accuracy = 0
+    best = results[0]
 
     for gene in results:
       answer = global_alignment(genome, gene, match_score, mismatch_penalty, gap_penalty)
@@ -247,6 +248,7 @@ def fasta_accuracy():
         accuracy = answer[2]
         seq1 = answer[0]
         seq2 = answer[1]
+        best = gene
       
       temp = {
         'seq1': answer[0],
@@ -259,7 +261,7 @@ def fasta_accuracy():
       stats = getStats(results)
       
       return jsonify({'allResults': allResults, 'results': results, 'seq1': seq1, 'seq2': seq2, 'accuracy': accuracy,
-                      'minLength': stats[0], 'maxLength': stats[1], 'avgLength': stats[2]}), 200
+                      'minLength': stats[0], 'maxLength': stats[1], 'avgLength': stats[2], 'best': best}), 200
 
   except Exception as e:
     return jsonify({"error": str(e)}), 500
