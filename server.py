@@ -64,9 +64,13 @@ def make_graph(edges):
 @app.route('/process_fasta', methods=['POST'])
 def process_fasta():
   try:
+    print('sarthak')
     fasta_file = request.files['fasta_file']
     kmer_length = int(request.form['kmer_length'])
+    print('samarth', + kmer_length)
+    print(fasta_file)
     fasta_content = fasta_file.read().decode('utf-8')
+    print(fasta_content)
     sequences = parse_fasta(fasta_content)
     reads = []
 
