@@ -251,9 +251,9 @@ def fasta_accuracy():
     gap = ''
 
     for gene in results:
-      if(1==1):
-         allResults.append(1)
-         continue
+      # if(1==1):
+      #    allResults.append(1)
+      #    continue
       answer = global_alignment(genome, gene, match_score, mismatch_penalty, gap_penalty)
       if(answer[2]>accuracy):
         accuracy = answer[2]
