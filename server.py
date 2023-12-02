@@ -271,7 +271,7 @@ def fasta_accuracy():
 
       allResults.append(temp)
 
-      stats = getStats(results)
+    stats = getStats(results)
       
     return jsonify({'allResults': allResults, 'results': results, 'seq1': seq1, 'seq2': seq2, 'accuracy': accuracy,
                     'minLength': stats[0], 'maxLength': stats[1], 'avgLength': stats[2], 'best': best, 'mismatch': mismatch, 'gap': gap}), 200
