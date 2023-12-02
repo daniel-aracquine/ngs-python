@@ -230,12 +230,17 @@ def process_fasta():
 def fasta_accuracy():
   try:
     results = request.form.getlist('results')
-    print(results)
+    print('length of results array is: ',len(results))
     match_score = int(request.form['match_score'])
+    print('match_score is: ', match_score)
     mismatch_penalty = int(request.form['mismatch_penalty'])
+    print('mismatch_penalty is: ', mismatch_penalty)
     gap_penalty = int(request.form['gap_penalty'])
+    print('gap_penalty is: ', gap_penalty)
     key_file = request.files['key_file']
+    print('key file loaded successfully')
     genome = key_file.read().decode('utf-8')
+    print('length of genome is: ' ,len(genome))
 
     allResults = []
     seq1 = ''
