@@ -193,7 +193,7 @@ def global_alignment(seq1, seq2, match_score=1, mismatch_penalty=0, gap_penalty=
             aligned_seq2 = seq2[j-1] + aligned_seq2
             j -= 1
 
-    return aligned_seq1,aligned_seq2,score_matrix[rows-1][cols-1]
+    return aligned_seq1,aligned_seq2,score_matrix[rows-1][cols-1],1,1
 
 
 def getStats(results):
@@ -229,7 +229,8 @@ def process_fasta():
 @app.route('/fasta_accuracy', methods=['POST'])
 def fasta_accuracy():
   try:
-    results = getResults(request)
+    results = request.form.getlist('results')
+    print(results)
     match_score = int(request.form['match_score'])
     mismatch_penalty = int(request.form['mismatch_penalty'])
     gap_penalty = int(request.form['gap_penalty'])
@@ -241,6 +242,8 @@ def fasta_accuracy():
     seq2 = ''
     accuracy = 0
     best = results[0]
+    mismatch = ''
+    gap = ''
 
     for gene in results:
       answer = global_alignment(genome, gene, match_score, mismatch_penalty, gap_penalty)
@@ -249,6 +252,8 @@ def fasta_accuracy():
         seq1 = answer[0]
         seq2 = answer[1]
         best = gene
+        mismatch = answer[3]
+        gap = answer[4]
       
       temp = {
         'seq1': answer[0],
@@ -260,8 +265,8 @@ def fasta_accuracy():
 
       stats = getStats(results)
       
-      return jsonify({'allResults': allResults, 'results': results, 'seq1': seq1, 'seq2': seq2, 'accuracy': accuracy,
-                      'minLength': stats[0], 'maxLength': stats[1], 'avgLength': stats[2], 'best': best}), 200
+    return jsonify({'allResults': allResults, 'results': results, 'seq1': seq1, 'seq2': seq2, 'accuracy': accuracy,
+                    'minLength': stats[0], 'maxLength': stats[1], 'avgLength': stats[2], 'best': best, 'mismatch': mismatch, 'gap': gap}), 200
 
   except Exception as e:
     return jsonify({"error": str(e)}), 500
