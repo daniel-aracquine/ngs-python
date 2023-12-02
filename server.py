@@ -229,7 +229,9 @@ def process_fasta():
 @app.route('/fasta_accuracy', methods=['POST'])
 def fasta_accuracy():
   try:
-    results = request.form.getlist('results')
+    data = request.json  # Get JSON data from the request body
+    results = data.get('results', [])
+    # results = request.form.getlist('results')
     print('length of results array is: ',len(results))
     match_score = int(request.form['match_score'])
     print('match_score is: ', match_score)
