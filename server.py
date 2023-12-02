@@ -230,7 +230,8 @@ def process_fasta():
 @app.route('/fasta_accuracy', methods=['POST'])
 def fasta_accuracy():
   try:
-    res = request.form('results')
+    res = request.form['results']
+    print(res)
     results = ast.literal_eval(res)
     # results = request.form.getlist('results')
     print('length of results array is: ',len(results))
