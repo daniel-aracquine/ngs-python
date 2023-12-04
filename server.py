@@ -137,8 +137,10 @@ def getResults(request):
 
   return results
 
+
 def global_alignment_with_stats(seq1, seq2, match_score=1, mismatch_penalty=-1, gap_penalty=-1):
     # Initialize the score matrix and statistics matrices
+
     rows, cols = len(seq1) + 1, len(seq2) + 1
     score_matrix = [[0] * cols for _ in range(rows)]
     mismatch_matrix = [[0] * cols for _ in range(rows)]
@@ -180,26 +182,29 @@ def global_alignment_with_stats(seq1, seq2, match_score=1, mismatch_penalty=-1, 
     # Perform traceback to find the aligned sequences
     aligned_seq1, aligned_seq2 = "", ""
     i, j = rows - 1, cols - 1
+    no_of_mismatch = 0
+    no_of_gaps = 0
 
     while i > 0 or j > 0:
         if traceback_matrix[i][j] == 0:  # Match
             aligned_seq1 = seq1[i-1] + aligned_seq1
             aligned_seq2 = seq2[j-1] + aligned_seq2
             if seq1[i-1] != seq2[j-1]:
-                mismatch_matrix[i][j] = mismatch_matrix[i-1][j-1] + 1
+                no_of_mismatch += 1
             i -= 1
             j -= 1
         elif traceback_matrix[i][j] == 1:  # Gap in seq1
             aligned_seq1 = seq1[i-1] + aligned_seq1
             aligned_seq2 = "-" + aligned_seq2
-            gap_matrix[i][j] = gap_matrix[i-1][j] + 1
+            no_of_gaps += 1
             i -= 1
         else:  # Gap in seq2
             aligned_seq1 = "-" + aligned_seq1
             aligned_seq2 = seq2[j-1] + aligned_seq2
             j -= 1
+            no_of_gaps += 1
 
-    return aligned_seq1, aligned_seq2, score_matrix[rows-1][cols-1], mismatch_matrix[-1][-1], gap_matrix[-1][-1]
+    return aligned_seq1, aligned_seq2, score_matrix[rows-1][cols-1], no_of_mismatch,no_of_gaps
 
 
 
