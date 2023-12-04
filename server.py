@@ -263,7 +263,7 @@ def fasta_accuracy():
       # if(1==1):
       #    allResults.append(1)
       #    continue
-      answer = global_alignment(genome, gene, match_score, mismatch_penalty, gap_penalty)
+      answer = global_alignment_with_stats(genome, gene, match_score, mismatch_penalty, gap_penalty)
       if(answer[2]>accuracy):
         accuracy = answer[2]
         seq1 = answer[0]
