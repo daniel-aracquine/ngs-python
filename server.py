@@ -138,73 +138,68 @@ def getResults(request):
   return results
 
 
-def global_alignment_with_stats(seq1, seq2, match_score=1, mismatch_penalty=-1, gap_penalty=-1):
-    # Initialize the score matrix and statistics matrices
-
+def global_alignment(seq1, seq2, match_score=1, mismatch_penalty=0, gap_penalty=0):
+    # Initialize the score matrix
     rows, cols = len(seq1) + 1, len(seq2) + 1
     score_matrix = [[0] * cols for _ in range(rows)]
-    mismatch_matrix = [[0] * cols for _ in range(rows)]
-    gap_matrix = [[0] * cols for _ in range(rows)]
+    miss = 0;
+    gaps = 0;
 
     # Initialize the traceback matrix
     traceback_matrix = [[0] * cols for _ in range(rows)]
-
     # Initialize the first row and column of the score matrix
     for i in range(1, rows):
         score_matrix[i][0] = i * gap_penalty
         traceback_matrix[i][0] = 1  # 1 represents a gap in the traceback matrix
-        gap_matrix[i][0] = gap_matrix[i-1][0] + 1
 
     for j in range(1, cols):
         score_matrix[0][j] = j * gap_penalty
         traceback_matrix[0][j] = 2  # 2 represents a gap in the traceback matrix
-
     # Fill in the score matrix and traceback matrix
     for i in range(1, rows):
         for j in range(1, cols):
             match = score_matrix[i-1][j-1] + (match_score if seq1[i-1] == seq2[j-1] else mismatch_penalty)
             delete = score_matrix[i-1][j] + gap_penalty
             insert = score_matrix[i][j-1] + gap_penalty
-
             # Choose the maximum score
             max_score = max(match, delete, insert)
             score_matrix[i][j] = max_score
-
             # Update the traceback matrix
             if max_score == match:
-                traceback_matrix[i][j] = 0  # 0 represents a match in the traceback matrix
+                traceback_matrix[i][j] = 0
+                 # 0 represents a match in the traceback matrix
             elif max_score == delete:
-                traceback_matrix[i][j] = 1  # 1 represents a gap in the traceback matrix
-                gap_matrix[i][j] = gap_matrix[i-1][j] + 1
+                traceback_matrix[i][j] = 1
+                  # 1 represents a gap in the traceback matrix
             else:
-                traceback_matrix[i][j] = 2  # 2 represents a gap in the traceback matrix
+                traceback_matrix[i][j] = 2
+                  # 2 represents a gap in the traceback matrix
 
     # Perform traceback to find the aligned sequences
     aligned_seq1, aligned_seq2 = "", ""
     i, j = rows - 1, cols - 1
-    no_of_mismatch = 0
-    no_of_gaps = 0
+
 
     while i > 0 or j > 0:
         if traceback_matrix[i][j] == 0:  # Match
             aligned_seq1 = seq1[i-1] + aligned_seq1
             aligned_seq2 = seq2[j-1] + aligned_seq2
-            if seq1[i-1] != seq2[j-1]:
-                no_of_mismatch += 1
             i -= 1
             j -= 1
+            if seq1[i-1]!=seq2[j-1]:
+              miss+=1;
         elif traceback_matrix[i][j] == 1:  # Gap in seq1
             aligned_seq1 = seq1[i-1] + aligned_seq1
             aligned_seq2 = "-" + aligned_seq2
-            no_of_gaps += 1
             i -= 1
+            gaps+=1;
         else:  # Gap in seq2
             aligned_seq1 = "-" + aligned_seq1
             aligned_seq2 = seq2[j-1] + aligned_seq2
             j -= 1
-            no_of_gaps += 1
+            gaps+=1;
 
-    return aligned_seq1, aligned_seq2, score_matrix[rows-1][cols-1], no_of_mismatch,no_of_gaps
+    return aligned_seq1,aligned_seq2,score_matrix[rows-1][cols-1],miss,gaps
 
 
 
@@ -268,7 +263,7 @@ def fasta_accuracy():
       # if(1==1):
       #    allResults.append(1)
       #    continue
-      answer = global_alignment_with_stats(genome, gene, match_score, mismatch_penalty, gap_penalty)
+      answer = global_alignment(genome, gene, match_score, mismatch_penalty, gap_penalty)
       if(answer[2]>accuracy):
         accuracy = answer[2]
         seq1 = answer[0]
